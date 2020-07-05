@@ -60,6 +60,30 @@ def coerce(request):
     return request.param
 
 
+class MockNumpyLikeArray:
+    """
+    A class which is numpy-like (e.g. Pint's Quantity) but not actually numpy
+
+    The key is that it is not actually a numpy array so
+    ``util.is_array(mock_numpy_like_array_instance)`` returns ``False``. Other
+    important properties are that the class defines a :meth:`__iter__` method
+    (so that ``isinstance(abc.Iterable)`` returns ``True``) and has a
+    :meth:`ndim` property which can be used as a check for whether it is a
+    scalar or not.
+    """
+
+    def __init__(self, values):
+        self._values = values
+
+    def __iter__(self):
+        for element in iter(self._values):
+            yield element
+
+    @property
+    def ndim(self):
+        return self._values.ndim
+
+
 # collect all objects to be tested for list-like-ness; use tuples of objects,
 # whether they are list-like or not (special casing for sets), and their ID
 ll_params = [
@@ -94,6 +118,15 @@ ll_params = [
     (np.ndarray((2,) * 4), True, "ndarray-4d"),
     (np.array([[[[]]]]), True, "ndarray-4d-empty"),
     (np.array(2), False, "ndarray-0d"),
+    (MockNumpyLikeArray(np.ndarray((2,) * 1)), True, "duck-ndarray-1d"),
+    (MockNumpyLikeArray(np.array([])), True, "duck-ndarray-1d-empty"),
+    (MockNumpyLikeArray(np.ndarray((2,) * 2)), True, "duck-ndarray-2d"),
+    (MockNumpyLikeArray(np.array([[]])), True, "duck-ndarray-2d-empty"),
+    (MockNumpyLikeArray(np.ndarray((2,) * 3)), True, "duck-ndarray-3d"),
+    (MockNumpyLikeArray(np.array([[[]]])), True, "duck-ndarray-3d-empty"),
+    (MockNumpyLikeArray(np.ndarray((2,) * 4)), True, "duck-ndarray-4d"),
+    (MockNumpyLikeArray(np.array([[[[]]]])), True, "duck-ndarray-4d-empty"),
+    (MockNumpyLikeArray(np.array(2)), False, "duck-ndarray-0d"),
     (1, False, "int"),
     (b"123", False, "bytes"),
     (b"", False, "bytes-empty"),
