@@ -76,8 +76,13 @@ class MockNumpyLikeArray:
         self._values = values
 
     def __iter__(self):
-        for element in iter(self._values):
-            yield element
+        iter_values = iter(self._values)
+
+        def it_outer():
+            for element in iter_values:
+                yield element
+
+        return it_outer()
 
     @property
     def ndim(self):
