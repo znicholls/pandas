@@ -147,7 +147,9 @@ def check_setitem_lengths(indexer, value, values) -> bool:
         # We can ignore other listlikes because they are either
         #  a) not necessarily 1-D indexers, e.g. tuple
         #  b) boolean indexers e.g. BoolArray
-        # this would need an updated is_list_like
+        # this would need an updated is_array_like to correctly identify
+        # instances of a numpy-like array object as array_like (see
+        # ``test_correctly_identify_numpy_like_array_as_array``)
         if is_list_like(value):
             if len(indexer) != len(value):
                 # boolean with truth values == len of the value is ok too
@@ -164,7 +166,9 @@ def check_setitem_lengths(indexer, value, values) -> bool:
                 no_op = True
 
     elif isinstance(indexer, slice):
-        # this would need an updated is_list_like
+        # this would need an updated is_array_like to correctly identify
+        # instances of a numpy-like array object as array_like (see
+        # ``test_correctly_identify_numpy_like_array_as_array``)
         if is_list_like(value):
             if len(value) != length_of_indexer(indexer, values):
                 raise ValueError(

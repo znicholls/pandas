@@ -134,11 +134,21 @@ cpdef assert_almost_equal(a, b,
                 return True
 
         else:
-            # this fails, possible solutions:
+            # See test_assert_almost_equal for example of how this fails, more
+            # detailed explanation:
+            #   For numpy-like arrays (e.g. pint's quantity implementation),
+            #   this fails when the wrapped numpy object is a numpy scalar
+            #   because the numpy-like array is not identified as a numpy array
+            #   (because it's not) yet a numpy scalar/instance of a numpy-like
+            #   array object which wraps a scalar doesn't have a length (you
+            #   get a TypeError below when you call ``len(a)``).
+
+            # Possible solutions:
             # - update isiterable so it recognises that input isn't iterable
             #   even though it has an '__iter__' method
-            # - update how a_is_ndarray is determined so it instead checks whether
-            #   the a is numpy-like (whatever numpy-like means)
+            # - update how a_is_ndarray is determined so it instead checks
+            #   whether a is numpy-like (whatever numpy-like means)
+
             na, nb = len(a), len(b)
 
         if na != nb:

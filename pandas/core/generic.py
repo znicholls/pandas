@@ -6365,7 +6365,9 @@ class NDFrame(PandasObject, SelectionMixin, indexing.IndexingMixin):
                     value = value.reindex(self.index, copy=False)
                     value = value._values
 
-                # this would need an updated is_list_like
+                # this would need an updated is_array_like to correctly identify
+                # instances of a numpy-like array object as array_like (see
+                # ``test_correctly_identify_numpy_like_array_as_array``)
                 elif not is_list_like(value):
                     pass
                 else:
@@ -6395,7 +6397,9 @@ class NDFrame(PandasObject, SelectionMixin, indexing.IndexingMixin):
                     obj.fillna(v, limit=limit, inplace=True, downcast=downcast)
                 return result if not inplace else None
 
-            # this would need an updated is_list_like
+            # this would need an updated is_array_like to correctly identify
+            # instances of a numpy-like array object as array_like (see
+            # ``test_correctly_identify_numpy_like_array_as_array``)
             elif not is_list_like(value):
                 new_data = self._mgr.fillna(
                     value=value, limit=limit, inplace=inplace, downcast=downcast

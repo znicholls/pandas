@@ -638,7 +638,9 @@ class ExtensionArray:
 
         mask = self.isna()
 
-        # this would need an updated is_array_like
+        # this would need an updated is_array_like to correctly identify
+        # instances of a numpy-like array object as array_like (see
+        # ``test_correctly_identify_numpy_like_array_as_array``)
         if is_array_like(value):
             if len(value) != len(self):
                 raise ValueError(
